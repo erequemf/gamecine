@@ -5,36 +5,53 @@ using UnityEngine;
 public abstract class Fighter : MonoBehaviour
 {
 
+    #region Fighter State Management
 
+    protected enum FIGHTER_STATES
+    {
+        IDLE,
+        WALK,
+        ATTACK,
+        DEFENSE,
+        DAMAGED,
+        DEATH
+    }
+
+    [SerializeField]
+    protected Fighter_State_Machine state_machine;
+
+    // States
+    public Fighter_Idle state_idle;
+
+    public Fighter_Walk state_walk;
+
+    public Fighter_Attack state_attack;
+    #endregion
 
 
     #region Input Variables
 
-    [SerializeField]
-    protected Vector2 movement_dir = new Vector2();
+    public Vector2 movement_dir = new Vector2();
 
-    [SerializeField]
-    protected bool attack_act = false;
+    public bool attack_act = false;
 
-    //defense_act = false;
+    public bool defense_act = false;
 
     #endregion
 
     
     #region Components
 
-    [SerializeField]
-    protected Animator anim_control;
+    public Animator anim_control;
 
-    [SerializeField]
-    protected CharacterController char_control;
+    public CharacterController char_control;
 
     #endregion
 
 
     #region Movement Parameters
 
-    protected float walk_speed = .6f;
+    public float walk_speed = .6f;
 
     #endregion
 
@@ -43,6 +60,21 @@ public abstract class Fighter : MonoBehaviour
     // Get parameters
     protected virtual void Start()
     {
+
+        // Create State Machine & States
+
+        state_machine = new Fighter_State_Machine();
+
+        state_idle = new Fighter_Idle(this, state_machine);
+
+        state_walk = new Fighter_Walk(this, state_machine);
+
+        state_attack = new Fighter_Attack(this, state_machine);
+
+        // Starter with idle
+
+        this.Set_to_Idle_State();
+
         // Auto Get Components
 
         anim_control = GetComponent<Animator>();
@@ -54,24 +86,12 @@ public abstract class Fighter : MonoBehaviour
     //  Function to set input each frame
     protected virtual void Update()
     {
-
-
+        state_machine.Update_Current_State();
     }
 
 
-    // Function to set Character Action each physics
-    protected virtual void FixedUpdate()
+    public void Set_to_Idle_State()
     {
-        Vector2 linear_velocity = movement_dir * walk_speed;
-
-        char_control.Move(linear_velocity * Time.deltaTime);
+        state_machine.Set_New_State(state_idle);
     }
-
-
-    // Function to update animator
-    protected virtual void LateUpdate()
-    {
-
-    }
-
 }

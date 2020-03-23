@@ -11,18 +11,20 @@ public class Player_Fighter : Fighter
         movement_dir.x = Input.GetAxis("Horizontal");
 
         // Attack
-        attack_act = Input.GetButtonDown("Action Primary");
+        attack_act = (Input.GetButtonDown("Action_Primary") );
+
+        // Defense
+        //defense_act = (Input.GetButtonDown("Action_Secondary"));
+
+
+        // Realize Update in base
+        base.Update();
 
     }
 
 
-    protected override void LateUpdate()
-    {
-        base.LateUpdate();
-
-        if (attack_act)
-        {
-            anim_control.SetTrigger("Attack");
-        }
-    }
+    //  if (attack_act)
+       // {
+         //   anim_control.SetTrigger("Attack");
+        //}
 }
